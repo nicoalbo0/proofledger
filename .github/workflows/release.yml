@@ -14,7 +14,7 @@ jobs:
     environment: release
     permissions:
       contents: read
-      id-token: write # npm provenance
+      id-token: write # OIDC for npm Trusted Publishing + provenance
     steps:
       - uses: actions/checkout@v4
 
@@ -24,12 +24,14 @@ jobs:
           registry-url: "https://registry.npmjs.org"
           cache: npm
 
+      # npm Trusted Publishing (OIDC) needs a recent npm; the one bundled with
+      # Node 20 is too old. No NPM_TOKEN — auth is short-lived via OIDC.
+      - run: npm install -g npm@latest
+
       - run: npm ci
       - run: npm run typecheck
       - run: npm test
       - run: npm run build
 
-      - name: Publish to npm
-        run: npm publish --access public --provenance
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Publish to npm (Trusted Publishing)
+        run: npm publish
