@@ -41,7 +41,9 @@ _Milestone: **M1–M4 + launch scaffold + network adapters wired.** 53 tests pas
 - keytar: `KeychainSecrets` already functional (lazy import → `FileSecrets` fallback). No longer a skeleton.
 - Tests `src/adapters/network.test.ts` (10): worker script/name, CF deploy call sequence + URL, Meta payloads/insights/createCampaign, signal counts+relevance+degrade.
 
-**Still needed for a real paid loop:** a live smoke test with real keys (Stripe **test mode** first — free; then Cloudflare free Worker; then Meta with a tiny budget or sandbox ad account); keyword→interest targeting refinement on Meta; wire `pl verify` tier dispatch polish.
+**Live smoke tests (env-gated, skipped in CI):** `src/adapters/stripe.live.test.ts` (`npm run smoke:stripe`, needs `PL_LIVE_STRIPE=sk_test_...`), `src/adapters/cloudflare.live.test.ts` (`npm run smoke:cf`, needs `PL_LIVE_CF_ACCOUNT`/`PL_LIVE_CF_TOKEN`). Meta = manual, see `docs/smoke-test.md`. Run order: Stripe test-mode → Cloudflare free → Meta sandbox.
+
+**Still needed for a real paid loop:** run the 3 smoke tests with real keys; keyword→interest targeting refinement on Meta; wire `pl verify` tier dispatch polish.
 
 ---
 ### Earlier: M4 + launch scaffold

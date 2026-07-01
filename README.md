@@ -100,6 +100,7 @@ is in progress — see [`docs/`](docs/) and [`CLAUDE.md`](CLAUDE.md).
 - [`docs/functional-spec.md`](docs/functional-spec.md)
 - [`docs/technical-spec.md`](docs/technical-spec.md)
 - [`docs/data-model.md`](docs/data-model.md)
+- [`docs/smoke-test.md`](docs/smoke-test.md) — live Stripe/Cloudflare/Meta checks
 
 ## License
 

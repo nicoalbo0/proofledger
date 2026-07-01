@@ -20,6 +20,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "coverage": "vitest run --coverage",
+    "smoke:stripe": "vitest run src/adapters/stripe.live.test.ts",
+    "smoke:cf": "vitest run src/adapters/cloudflare.live.test.ts",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "pl": "node --import tsx ./src/cli.ts",
     "prepublishOnly": "npm run build && npm test"
