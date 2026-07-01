@@ -74,11 +74,19 @@ API sequence; only go live if you want real clicks.
 
 ### Automated connectivity check (recommended first)
 Creates the full campaign→adset→creative→ad chain **PAUSED** (no spend), reads
-insights, then deletes the campaign:
-```bash
-PL_LIVE_META_TOKEN=<token> PL_LIVE_META_ADACCOUNT=<digits> PL_LIVE_META_PAGE=<page-id> \
-  npm run smoke:meta
+insights, then deletes the campaign. Put credentials in a git-ignored `.env.test`
+at the repo root:
 ```
+PL_LIVE_META_TOKEN=EAAB...
+PL_LIVE_META_ADACCOUNT=1234567890
+PL_LIVE_META_PAGE=1122334455
+```
+then:
+```bash
+npm run smoke:meta
+```
+(All smoke scripts auto-load `.env.test`; the same file can hold `PL_LIVE_STRIPE`
+and `PL_LIVE_CF_*`. It is never committed.)
 Token needs `ads_management`; the ad account may need a payment method attached
 even for paused ads (it is never charged while paused). Pass = the whole ad
 sequence works against the real Graph API.
