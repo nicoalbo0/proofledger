@@ -72,12 +72,21 @@ proofledger status                     # gate opens if the bet clears
 Two options. Start with the **sandbox** (no spend, no delivery) to confirm the
 API sequence; only go live if you want real clicks.
 
-### Sandbox / connectivity
-1. Create a Meta app + a **test ad account** (Business Manager → Business Settings
-   → Accounts → Ad Accounts → *Add* → create a sandbox/test account).
-2. Get a **user access token** with `ads_management` (Graph API Explorer).
-3. Get a **Facebook Page id** (a test Page is fine).
-4. Connect + run paused (nothing delivers):
+### Automated connectivity check (recommended first)
+Creates the full campaign→adset→creative→ad chain **PAUSED** (no spend), reads
+insights, then deletes the campaign:
+```bash
+PL_LIVE_META_TOKEN=<token> PL_LIVE_META_ADACCOUNT=<digits> PL_LIVE_META_PAGE=<page-id> \
+  npm run smoke:meta
+```
+Token needs `ads_management`; the ad account may need a payment method attached
+even for paused ads (it is never charged while paused). Pass = the whole ad
+sequence works against the real Graph API.
+
+### Manual variant
+1. Get a **user access token** with `ads_management` (Graph API Explorer).
+2. Get your **ad account id** (digits only) and a **Facebook Page id**.
+3. Connect + run paused (nothing delivers):
    ```bash
    proofledger connect meta --token <token> --adaccount <act-id-digits> --page <page-id>
    proofledger experiment run --assumption <pay-id> --price 9 --headline "X" \
