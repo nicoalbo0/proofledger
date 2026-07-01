@@ -31,7 +31,22 @@ Node 20+, TypeScript strict, Vitest, flat-JSON store, keytar for secrets. No DB,
 - `npm run pl -- <cmd>` — run the CLI locally
 
 ## Build progress
-_Milestone: **M1–M4 core done + launch scaffold.** 43 tests passing, typecheck clean, 0 vulns, full loop closes with fakes._
+_Milestone: **M1–M4 + launch scaffold + network adapters wired.** 53 tests passing, typecheck clean, 0 vulns._
+
+**Network wiring (this session):**
+- `src/adapters/http.ts` — `httpJson` wrapper with **injectable `fetch`** (adapters unit-tested offline with mock fetch).
+- `src/adapters/host.ts` — `CloudflareWorkerAdapter` (real): deploys landing as a Worker (PUT script → enable subdomain → resolve workers.dev URL). Pure `buildWorkerScript` + `workerName`. Replaced the Pages skeleton (Worker path avoids Pages' hash-manifest/upload-token).
+- `src/adapters/ad.ts` — `MetaAdAdapter` (real): Graph v21 full flow campaign→adset→**adcreative→ad**, all PAUSED; activate/pause/insights. Needs a Facebook Page id (`meta.page` secret). Pure `campaignPayload`/`adSetPayload`/`adCreativePayload`/`adPayload`/`sumInsights`.
+- `src/adapters/signal.ts` — `PublicSignalAdapter`: injectable fetch, real relevance ratio (phrase vs broad HN hits), degrade-to-0.
+- keytar: `KeychainSecrets` already functional (lazy import → `FileSecrets` fallback). No longer a skeleton.
+- Tests `src/adapters/network.test.ts` (10): worker script/name, CF deploy call sequence + URL, Meta payloads/insights/createCampaign, signal counts+relevance+degrade.
+
+**Live smoke tests (env-gated, skipped in CI):** `src/adapters/stripe.live.test.ts` (`npm run smoke:stripe`, needs `PL_LIVE_STRIPE=sk_test_...`), `src/adapters/cloudflare.live.test.ts` (`npm run smoke:cf`, needs `PL_LIVE_CF_ACCOUNT`/`PL_LIVE_CF_TOKEN`). Meta = manual, see `docs/smoke-test.md`. Run order: Stripe test-mode → Cloudflare free → Meta sandbox.
+
+**Still needed for a real paid loop:** run the 3 smoke tests with real keys; keyword→interest targeting refinement on Meta; wire `pl verify` tier dispatch polish.
+
+---
+### Earlier: M4 + launch scaffold
 
 **M4 + launch (this session):**
 - `src/adapters/ad.ts` — `AdAdapter` + `FakeAdAdapter` + `MetaAdAdapter` skeleton + `projectedSpendUsd`.
