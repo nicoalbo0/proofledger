@@ -106,4 +106,4 @@ pending a live run. Not yet on npm — see [`docs/`](docs/) and [`CLAUDE.md`](CL
 
 ## License
 
-[Apache-2.0](LICENSE) © 2026 Nicola Albore
+[Apache-2.0](LICENSE) © 2026 Nicola Alboré

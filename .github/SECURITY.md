@@ -3,7 +3,7 @@
 ## Reporting a vulnerability
 
 Please report security issues **privately** via
-[GitHub Security Advisories](https://github.com/nicola-albore/proofledger/security/advisories/new).
+[GitHub Security Advisories](https://github.com/nicoalbo0/proofledger/security/advisories/new).
 Do not open a public issue for a vulnerability.
 
 We aim to acknowledge within 72 hours.

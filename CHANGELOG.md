@@ -29,4 +29,4 @@ All notable changes to ProofLedger are documented here. Format follows
 - Stripe (test mode) and Cloudflare (free Worker) pass live against real APIs.
 - Meta ads unit-tested (payloads + call sequence); live run pending.
 
-[Unreleased]: https://github.com/nicola-albore/proofledger/commits/main
+[Unreleased]: https://github.com/nicoalbo0/proofledger/commits/main

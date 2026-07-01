@@ -43,14 +43,18 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/nicola-albore/proofledger.git"
+    "url": "git+https://github.com/nicoalbo0/proofledger.git"
   },
-  "homepage": "https://github.com/nicola-albore/proofledger#readme",
+  "homepage": "https://github.com/nicoalbo0/proofledger#readme",
   "bugs": {
-    "url": "https://github.com/nicola-albore/proofledger/issues"
+    "url": "https://github.com/nicoalbo0/proofledger/issues"
   },
-  "author": "Nicola Albore",
+  "author": "Nicola Alboré",
   "license": "Apache-2.0",
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
   "dependencies": {
     "nanoid": "^5.0.7"
   },
