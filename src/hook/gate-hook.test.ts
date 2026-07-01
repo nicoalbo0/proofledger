@@ -34,6 +34,12 @@ describe("gateHookDecision (PreToolUse mechanics)", () => {
     expect(gateHookDecision(store, { tool_input: { file_path: "README.md" } }).block).toBe(false);
   });
 
+  it("BLOCKS an ABSOLUTE product path (Claude Code passes absolute)", () => {
+    // Regression: absolute paths must be relativized against cwd before glob match.
+    const abs = join(root, "src", "app.ts");
+    expect(gateHookDecision(store, { tool_input: { file_path: abs }, cwd: root }).block).toBe(true);
+  });
+
   it("ALLOWS once verified money opens the gate", () => {
     verifyStub(store, [{ assumptionId: gateId, tier: 2, type: "stripe_preauth", clicks: 300, successes: 60 }], T0);
     expect(gateHookDecision(store, { tool_input: { file_path: "src/app.ts" } }).block).toBe(false);

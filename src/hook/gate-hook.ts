@@ -1,3 +1,4 @@
+import { isAbsolute, relative } from "node:path";
 import type { Store } from "../store/store.js";
 import { gateCheck } from "../domain/gate.js";
 
@@ -25,7 +26,11 @@ export function gateHookDecision(store: Store, payload: HookPayload): HookDecisi
   const filePath = payload?.tool_input?.file_path;
   if (!filePath) return { block: false, reason: "no file path" };
   if (!store.isInitialized()) return { block: false, reason: "no ledger here" };
-  const d = gateCheck(store, filePath);
+  // Claude Code passes an ABSOLUTE file path; productGlobs are repo-relative.
+  // Relativize against the project root (the hook payload's cwd) before matching.
+  const cwd = payload.cwd ?? process.cwd();
+  const rel = isAbsolute(filePath) ? relative(cwd, filePath) : filePath;
+  const d = gateCheck(store, rel);
   return { block: d.decision === "block", reason: d.reason };
 }
 
