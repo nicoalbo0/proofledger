@@ -1,5 +1,7 @@
+import { httpJson, type FetchImpl } from "./http.js";
+
 // HostAdapter — deploys a static landing bundle to the FOUNDER'S own host
-// account (zero infra we operate). Cloudflare Pages is the first implementation.
+// account (zero infra we operate).
 
 export interface DeployResult {
   publicUrl: string;
@@ -20,24 +22,78 @@ export class FakeHostAdapter implements HostAdapter {
   }
 }
 
+const CF_BASE = "https://api.cloudflare.com/client/v4";
+
+/** Cloudflare Worker names: lowercase alnum + hyphen, must start with a letter. */
+export function workerName(slug: string): string {
+  const cleaned = slug.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+  return `pl-${cleaned}`.slice(0, 54);
+}
+
+/** Service-worker script that serves the landing HTML. Pure + testable. */
+export function buildWorkerScript(html: string): string {
+  return `addEventListener("fetch", (event) => {
+  event.respondWith(
+    new Response(${JSON.stringify(html)}, {
+      headers: { "content-type": "text/html;charset=utf-8" },
+    }),
+  );
+});`;
+}
+
+interface CfResult<T> {
+  result: T;
+}
+
 /**
- * Cloudflare Pages via Direct Upload. Uses the founder's account id + API token.
- * Thin I/O skeleton; wired with real fetch in the M3 finish step. Chosen first
- * for a generous free tier + single-token auth (docs/technical-spec.md §11.1).
+ * Deploys the landing page as a Cloudflare Worker on the founder's account and
+ * exposes it on <name>.<account-subdomain>.workers.dev. One PUT + subdomain
+ * enable — far more reliable via pure API than Pages Direct Upload (which needs
+ * a file-hash manifest + upload token). Same HostAdapter contract either way.
  */
-export class CloudflarePagesAdapter implements HostAdapter {
+export class CloudflareWorkerAdapter implements HostAdapter {
+  private fetch: FetchImpl;
   constructor(
     private accountId: string,
     private apiToken: string,
-  ) {}
+    deps: { fetch?: FetchImpl } = {},
+  ) {
+    this.fetch = deps.fetch ?? fetch;
+  }
+
+  private headers(contentType?: string): Record<string, string> {
+    const h: Record<string, string> = { authorization: `Bearer ${this.apiToken}` };
+    if (contentType) h["content-type"] = contentType;
+    return h;
+  }
 
   async deploy(slug: string, html: string): Promise<DeployResult> {
-    // Real impl: create/ensure a Pages project, then POST a Direct Upload
-    // deployment containing index.html. Left as a marked skeleton so offline
-    // builds/tests don't require Cloudflare credentials.
-    void html;
-    throw new Error(
-      "CloudflarePagesAdapter.deploy not yet wired — connect Cloudflare and finish M3 host step",
+    const name = workerName(slug);
+
+    // 1. Upload the Worker script (service-worker format).
+    await httpJson(this.fetch, `${CF_BASE}/accounts/${this.accountId}/workers/scripts/${name}`, {
+      method: "PUT",
+      headers: this.headers("application/javascript"),
+      body: buildWorkerScript(html),
+    });
+
+    // 2. Expose it on workers.dev.
+    await httpJson(this.fetch, `${CF_BASE}/accounts/${this.accountId}/workers/scripts/${name}/subdomain`, {
+      method: "POST",
+      headers: this.headers("application/json"),
+      body: JSON.stringify({ enabled: true }),
+    });
+
+    // 3. Resolve the account's workers.dev subdomain to build the URL.
+    const sub = await httpJson<CfResult<{ subdomain: string }>>(
+      this.fetch,
+      `${CF_BASE}/accounts/${this.accountId}/workers/subdomain`,
+      { headers: this.headers() },
     );
+
+    return {
+      publicUrl: `https://${name}.${sub.result.subdomain}.workers.dev`,
+      deployId: name,
+    };
   }
 }

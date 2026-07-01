@@ -14,7 +14,7 @@ import { runExperiment, pollExperiment } from "./commands/experiment.js";
 import { runPaymentVerification } from "./commands/verify-payment.js";
 import { PublicSignalAdapter } from "./adapters/signal.js";
 import { StripePaymentAdapter } from "./adapters/stripe.js";
-import { CloudflarePagesAdapter } from "./adapters/host.js";
+import { CloudflareWorkerAdapter } from "./adapters/host.js";
 import { MetaAdAdapter } from "./adapters/ad.js";
 import { gatingAssumption } from "./domain/verdict.js";
 import { resolveSecrets, secretKey, type SecretsProvider } from "./secrets/secrets.js";
@@ -143,8 +143,8 @@ async function main(argv: string[]): Promise<number> {
         store,
         {
           payment: new StripePaymentAdapter(await need(secrets, "stripe", "secret")),
-          host: new CloudflarePagesAdapter(await need(secrets, "cloudflare", "account"), await need(secrets, "cloudflare", "token")),
-          ad: new MetaAdAdapter(await need(secrets, "meta", "token"), await need(secrets, "meta", "adaccount")),
+          host: new CloudflareWorkerAdapter(await need(secrets, "cloudflare", "account"), await need(secrets, "cloudflare", "token")),
+          ad: new MetaAdAdapter(await need(secrets, "meta", "token"), await need(secrets, "meta", "adaccount"), await need(secrets, "meta", "page")),
         },
         {
           assumptionId,
@@ -153,7 +153,7 @@ async function main(argv: string[]): Promise<number> {
           headline: f.headline ?? "Coming soon",
           subhead: f.subhead ?? "",
           ctaLabel: f.cta ?? "Reserve your spot",
-          targeting: { keywords: (f.keywords ?? "").split(",").filter(Boolean), dailyBudgetUsd: Number(f.daily ?? 0), days: Number(f.days ?? 0) },
+          targeting: { keywords: (f.keywords ?? "").split(",").filter(Boolean), dailyBudgetUsd: Number(f.daily ?? 0), days: Number(f.days ?? 0), headline: f.headline ?? "Coming soon", body: f.subhead ?? "" },
           confirmActivation: f.activate === "true",
         },
         clock,
