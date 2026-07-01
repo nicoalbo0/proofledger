@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "productGlobs": [
+    "src/**",
+    "app/**",
+    "lib/**"
+  ],
+  "budget": {
+    "perExperimentUsdCap": 200,
+    "requireActivationConfirm": true
+  },
+  "decayHalfLifeDays": 90,
+  "providers": {
+    "signal": "public"
+  },
+  "verdictLlm": {
+    "provider": "anthropic",
+    "model": "claude-opus-4-8"
+  }
+}
