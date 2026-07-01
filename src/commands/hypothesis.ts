@@ -34,7 +34,7 @@ export function buildHypothesis(claim: string, clock: Clock): Hypothesis {
   };
 }
 
-/** `pl hypothesis "<claim>"` — create + activate a hypothesis, recompute gate. */
+/** `proofledger hypothesis "<claim>"` — create + activate a hypothesis, recompute gate. */
 export function addHypothesis(store: Store, claim: string, clock: Clock): Hypothesis {
   const h = buildHypothesis(claim, clock);
   store.writeHypothesis(h);

@@ -1,6 +1,6 @@
 import { type FetchImpl } from "./http.js";
 
-// Cheap, read-only credential checks — a founder runs `pl doctor --ping` to know
+// Cheap, read-only credential checks — a founder runs `proofledger doctor --ping` to know
 // keys work before spending a cent. Each hits the smallest authenticated GET the
 // provider offers. Injectable fetch for offline tests.
 

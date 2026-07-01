@@ -8,7 +8,7 @@ import { applyVerification, recomputeLedger } from "../domain/apply.js";
 import type { Evidence, Hypothesis } from "../domain/types.js";
 
 /**
- * `pl signal` (Tier-0) — free desk screen. Computes a deterministic signal score
+ * `proofledger signal` (Tier-0) — free desk screen. Computes a deterministic signal score
  * from public data and records it as a verified tier-0 `signal_desk` evidence.
  * Because tier 0 < any gate node's minTier, a strong score can never open the
  * build gate — but a weak score CAN mark the assumption `dead` (a $0 kill).

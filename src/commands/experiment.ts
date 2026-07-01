@@ -35,7 +35,7 @@ export interface ExperimentResult {
 }
 
 /**
- * `pl experiment run` — the Tier-2 saga. Each external creation is guarded by the
+ * `proofledger experiment run` — the Tier-2 saga. Each external creation is guarded by the
  * providerRef it produces, so a re-run reconciles (resumes) instead of
  * duplicating a campaign or landing page. Money is never spent without an
  * explicit confirmActivation (and the config's requireActivationConfirm).

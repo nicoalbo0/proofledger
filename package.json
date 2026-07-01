@@ -4,7 +4,8 @@
   "description": "Local-first startup-validation plugin: gate coding on machine-verified real-money evidence.",
   "type": "module",
   "bin": {
-    "pl": "./dist/cli.js"
+    "proofledger": "./dist/cli.js",
+    "plg": "./dist/cli.js"
   },
   "files": [
     "dist",
@@ -24,7 +25,7 @@
     "smoke:stripe": "vitest run src/adapters/stripe.live.test.ts",
     "smoke:cf": "vitest run src/adapters/cloudflare.live.test.ts",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "pl": "node --import tsx ./src/cli.ts",
+    "cli": "node --import tsx ./src/cli.ts",
     "prepublishOnly": "npm run build && npm test"
   },
   "engines": {

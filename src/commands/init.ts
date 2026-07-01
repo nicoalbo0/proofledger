@@ -32,7 +32,7 @@ export interface InitResult {
   alreadyInitialized: boolean;
 }
 
-/** `pl init` — scaffold .proofledger/, write default config + empty ledger. */
+/** `proofledger init` — scaffold .proofledger/, write default config + empty ledger. */
 export function initRepo(store: Store, motivation: string, clock: Clock): InitResult {
   if (store.isInitialized()) return { alreadyInitialized: true };
   store.scaffold();

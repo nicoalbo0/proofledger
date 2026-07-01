@@ -9,10 +9,10 @@ export type RegisterInput = Omit<FreezeInput, "assumptionId"> & {
   assumptionId?: string; // defaults to the gating assumption
 };
 
-/** `pl register` — freeze a hash-locked bet on an assumption of the active hypothesis. */
+/** `proofledger register` — freeze a hash-locked bet on an assumption of the active hypothesis. */
 export function registerBet(store: Store, input: RegisterInput, clock: Clock): Registration {
   const ledger = store.readLedger();
-  if (!ledger.activeHypothesisId) throw new Error("no active hypothesis; run `pl hypothesis` first");
+  if (!ledger.activeHypothesisId) throw new Error("no active hypothesis; run `proofledger hypothesis` first");
   const h = store.readHypothesis(ledger.activeHypothesisId);
 
   const assumptionId = input.assumptionId ?? gatingAssumption(h)?.id;

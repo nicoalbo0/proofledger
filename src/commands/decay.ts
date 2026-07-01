@@ -3,7 +3,7 @@ import type { Store } from "../store/store.js";
 import { applyVerification, recomputeLedger } from "../domain/apply.js";
 
 /**
- * `pl decay` — re-evaluate every registered assumption against the current time.
+ * `proofledger decay` — re-evaluate every registered assumption against the current time.
  * applyVerification flips assumptions whose verified evidence has passed its
  * expiry to `decayed`; recomputeLedger then re-locks the gate if the gating node
  * decayed. "We validated this last quarter" must not grant forever-access.

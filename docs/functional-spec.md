@@ -1,6 +1,6 @@
 # ProofLedger — Functional Specification
 
-> Working name: **ProofLedger**. CLI/plugin id: `proofledger` (`pl`).
+> Working name: **ProofLedger**. CLI/plugin id: `proofledger` (alias `plg`).
 > Status: v0 draft. Owner: Nicola. Date: 2026-07-01.
 
 ---
@@ -51,19 +51,19 @@ Primary design target = the solo technical founder inside their coding environme
 
 ### 4.1 Onboard
 ```
-pl init
+proofledger init
   → creates .proofledger/ in repo
   → asks: what are you trying to build? (captures "why")
-  → connects provider keys (Stripe, one ad platform, one host) via `pl connect`
+  → connects provider keys (Stripe, one ad platform, one host) via `proofledger connect`
   → installs PreToolUse build-gate hook
 ```
 
 ### 4.2 Frame the bet
 ```
-pl hypothesis "diabetics will pre-pay $15/mo for AI meal planning"
+proofledger hypothesis "diabetics will pre-pay $15/mo for AI meal planning"
   → LLM decomposes into risky assumptions, ranks by "cheapest-to-kill first"
   → founder picks the assumption to test now
-pl register
+proofledger register
   → interactive: metric = pre-auth conversion
                  sample = 300 ad clicks
                  PASS if ≥ 5%   KILL if < 2%
@@ -72,18 +72,18 @@ pl register
 
 ### 4.3 Run the real experiment (full loop)
 ```
-pl experiment run demand-pay
+proofledger experiment run demand-pay
   1. generates a landing page (headline from hypothesis, $15 "reserve your spot" CTA)
   2. deploys it to the FOUNDER'S host account (Cloudflare Pages / Vercel)   → public URL
   3. wires Stripe pre-auth (PaymentIntent capture_method=manual) to the CTA
-  4. launches an ad set on the FOUNDER'S ad account, budget cap from `pl` config
+  4. launches an ad set on the FOUNDER'S ad account, budget cap from `proofledger` config
   5. streams live counters: clicks / emails / pre-auths
 ```
 No stranger ever touches our servers — page is on the founder's host, payments on the founder's Stripe, ads on the founder's ad account. The plugin is the orchestrator + verifier only.
 
 ### 4.4 Collect & verify
 ```
-pl verify
+proofledger verify
   → re-fetches every artifact from source APIs:
      - Stripe: list PaymentIntents in requires_capture for this experiment
      - Ad platform: pull conversion + spend report
@@ -94,7 +94,7 @@ pl verify
 
 ### 4.5 Verdict + gate
 ```
-pl status
+proofledger status
 ```
 Renders the scoreboard (see below). If the gating assumption is now `alive` → build-gate opens green. If `dead` → gate stays locked, and the ledger prescribes the next cheapest test.
 
@@ -127,17 +127,17 @@ Renders the scoreboard (see below). If the gating assumption is now `alive` → 
 
 | Command | Does |
 |---|---|
-| `pl init` | Scaffold `.proofledger/`, capture motivation, install hook |
-| `pl connect <provider>` | OAuth/key setup for Stripe / ad platform / host, stored in OS keychain |
-| `pl hypothesis "<claim>"` | Decompose into ranked risky assumptions |
-| `pl register` | Freeze metric + sample + PASS/KILL thresholds (hash-locked) |
-| `pl experiment run <name>` | Deploy landing, wire Stripe, launch ads, stream counters |
-| `pl verify` | Re-fetch + verify all artifacts, update node status, void pre-auths |
-| `pl status` | Render scoreboard + verdict + gate state |
-| `pl gate` | Explain why the build gate is open/closed right now |
-| `pl decay` | Recompute node freshness, flip stale nodes to `decayed` |
-| `pl pivot` | Archive dead hypothesis, seed a new registration |
-| `pl export` | Emit shareable read-only ledger (for investors/accelerators) |
+| `proofledger init` | Scaffold `.proofledger/`, capture motivation, install hook |
+| `proofledger connect <provider>` | OAuth/key setup for Stripe / ad platform / host, stored in OS keychain |
+| `proofledger hypothesis "<claim>"` | Decompose into ranked risky assumptions |
+| `proofledger register` | Freeze metric + sample + PASS/KILL thresholds (hash-locked) |
+| `proofledger experiment run <name>` | Deploy landing, wire Stripe, launch ads, stream counters |
+| `proofledger verify` | Re-fetch + verify all artifacts, update node status, void pre-auths |
+| `proofledger status` | Render scoreboard + verdict + gate state |
+| `proofledger gate` | Explain why the build gate is open/closed right now |
+| `proofledger decay` | Recompute node freshness, flip stale nodes to `decayed` |
+| `proofledger pivot` | Archive dead hypothesis, seed a new registration |
+| `proofledger export` | Emit shareable read-only ledger (for investors/accelerators) |
 
 Mirrors the successful skill-trigger UX of startup-skill/telos, but each command touches real APIs.
 

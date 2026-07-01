@@ -20,7 +20,7 @@ export interface StubBatch {
 }
 
 /**
- * `pl verify` (M1 stub) — materialize verified evidence from a stub batch, then
+ * `proofledger verify` (M1 stub) — materialize verified evidence from a stub batch, then
  * run the sole status writer + recompute the gate. In M1 this stands in for real
  * provider re-fetch; every Evidence row is marked `verified` because the (stub)
  * verifier "re-fetched" it. Founder-typed numbers never reach status directly —

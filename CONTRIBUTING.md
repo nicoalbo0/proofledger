@@ -28,7 +28,7 @@ npm test
 npm run build
 ```
 
-Run the CLI from source: `npm run pl -- help`.
+Run the CLI from source: `npm run cli -- help`.
 
 ## Conventions
 
