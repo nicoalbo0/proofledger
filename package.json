@@ -22,9 +22,9 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "coverage": "vitest run --coverage",
-    "smoke:stripe": "vitest run src/adapters/stripe.live.test.ts",
-    "smoke:cf": "vitest run src/adapters/cloudflare.live.test.ts",
-    "smoke:meta": "vitest run src/adapters/meta.live.test.ts",
+    "smoke:stripe": "vitest run --config vitest.smoke.config.ts src/adapters/stripe.live.test.ts",
+    "smoke:cf": "vitest run --config vitest.smoke.config.ts src/adapters/cloudflare.live.test.ts",
+    "smoke:meta": "vitest run --config vitest.smoke.config.ts src/adapters/meta.live.test.ts",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "cli": "node --import tsx ./src/cli.ts",
     "prepublishOnly": "npm run build && npm test"
