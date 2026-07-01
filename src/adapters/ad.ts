@@ -63,6 +63,9 @@ export function campaignPayload(): Record<string, string> {
     objective: "OUTCOME_TRAFFIC",
     status: "PAUSED",
     special_ad_categories: "[]",
+    // Budget lives on the ad set, not the campaign. Graph v21 then requires this
+    // field to be set explicitly. false = each ad set keeps its own budget.
+    is_adset_budget_sharing_enabled: "false",
   };
 }
 
