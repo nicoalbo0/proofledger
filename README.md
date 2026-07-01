@@ -91,9 +91,11 @@ pl status                      # scoreboard + verdict; gate opens iff money veri
 
 ## Status
 
-Early (`0.1.x`). Core ledger, gate, hash-lock, Tier-0 signal, Stripe verification,
-and the experiment saga are built and tested. Real Cloudflare/Meta network wiring
-is in progress — see [`docs/`](docs/) and [`CLAUDE.md`](CLAUDE.md).
+Early (`0.1.x`), building in public. Core ledger, gate, hash-lock, Tier-0 signal,
+Stripe verification, and the experiment saga are built and tested (54 unit tests).
+Network adapters are wired and **smoke-tested live**: Stripe (test mode) and
+Cloudflare (free Worker) pass against the real APIs; Meta ads are unit-tested and
+pending a live run. Not yet on npm — see [`docs/`](docs/) and [`CLAUDE.md`](CLAUDE.md).
 
 ## Docs
 

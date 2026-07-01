@@ -1,5 +1,6 @@
 #!/usr/bin/env node
-import { readFileSync } from "node:fs";
+import { readFileSync, writeFileSync } from "node:fs";
+import { createRequire } from "node:module";
 import { Store } from "./store/store.js";
 import { systemClock } from "./util/clock.js";
 import { renderLedgerMd } from "./store/render.js";
@@ -11,6 +12,9 @@ import { verifyStub, type StubBatch } from "./commands/verify.js";
 import { runDecay } from "./commands/decay.js";
 import { runSignalScreen } from "./commands/signal.js";
 import { runExperiment, pollExperiment } from "./commands/experiment.js";
+import { pivot } from "./commands/pivot.js";
+import { buildExport, verifiedCounts } from "./commands/export.js";
+import { doctor, renderDoctor } from "./commands/doctor.js";
 import { runPaymentVerification } from "./commands/verify-payment.js";
 import { PublicSignalAdapter } from "./adapters/signal.js";
 import { StripePaymentAdapter } from "./adapters/stripe.js";
@@ -45,12 +49,30 @@ async function need(secrets: SecretsProvider, provider: string, name: string): P
   return v;
 }
 
+/** Parse a required numeric flag, rejecting missing/NaN/negative values. */
+function num(f: Record<string, string>, name: string, opts: { min?: number } = {}): number {
+  const raw = f[name];
+  if (raw === undefined) throw new Error(`missing --${name}`);
+  const n = Number(raw);
+  if (!Number.isFinite(n)) throw new Error(`--${name} must be a number, got "${raw}"`);
+  if (opts.min !== undefined && n < opts.min) throw new Error(`--${name} must be >= ${opts.min}`);
+  return n;
+}
+
 async function main(argv: string[]): Promise<number> {
   const [cmd, ...rest] = argv;
   const store = new Store(process.cwd());
   const clock = systemClock;
 
   switch (cmd) {
+    case "--version":
+    case "-v":
+    case "version": {
+      const pkg = createRequire(import.meta.url)("../package.json") as { version: string };
+      console.log(pkg.version);
+      return 0;
+    }
+
     case undefined:
     case "help":
     case "--help":
@@ -58,13 +80,17 @@ async function main(argv: string[]): Promise<number> {
         "pl <command>\n\n" +
           "  init [motivation]\n" +
           "  connect <provider> --<key> <value> ...\n" +
+          "  doctor [--ping true]\n" +
           "  hypothesis \"<claim>\"\n" +
           "  register --metric <m> --sample <n> --pass <x> --kill <y> [--assumption <id>]\n" +
           "  signal --assumption <id> --keywords a,b --competitors c,d\n" +
           "  experiment run --assumption <id> --price <n> --headline <s> --keywords a,b --daily <n> --days <n> [--activate true]\n" +
+          "  experiment poll --experiment <id>\n" +
           "  verify --experiment <id> | --file <batches.json>\n" +
           "  decay\n" +
           "  status\n" +
+          "  pivot [\"<new claim>\"]\n" +
+          "  export\n" +
           "  gate check <path> | gate --override \"<reason>\"",
       );
       return 0;
@@ -76,6 +102,13 @@ async function main(argv: string[]): Promise<number> {
       const secrets = await resolveSecrets();
       for (const [k, v] of Object.entries(f)) await secrets.set(secretKey(provider, k), v);
       console.log(`stored ${Object.keys(f).length} secret(s) for ${provider}.`);
+      return 0;
+    }
+
+    case "doctor": {
+      const f = flags(rest);
+      const reports = await doctor(await resolveSecrets(), { ping: f.ping === "true" });
+      console.log(renderDoctor(reports));
       return 0;
     }
 
@@ -121,9 +154,9 @@ async function main(argv: string[]): Promise<number> {
         store,
         {
           metric: f.metric as Metric,
-          sampleTarget: Number(f.sample),
-          passIf: { op: (f.passOp as CmpOp) ?? ">=", value: Number(f.pass) },
-          killIf: { op: (f.killOp as CmpOp) ?? "<", value: Number(f.kill) },
+          sampleTarget: num(f, "sample", { min: 1 }),
+          passIf: { op: (f.passOp as CmpOp) ?? ">=", value: num(f, "pass") },
+          killIf: { op: (f.killOp as CmpOp) ?? "<", value: num(f, "kill") },
           ...(f.assumption ? { assumptionId: f.assumption } : {}),
         },
         clock,
@@ -134,7 +167,17 @@ async function main(argv: string[]): Promise<number> {
 
     case "experiment": {
       requireInit(store);
-      if (rest[0] !== "run") throw new Error("usage: pl experiment run --assumption <id> --price <n> ...");
+      if (rest[0] === "poll") {
+        const f = flags(rest.slice(1));
+        if (!f.experiment) throw new Error("usage: pl experiment poll --experiment <id>");
+        const secrets = await resolveSecrets();
+        const ad = new MetaAdAdapter(await need(secrets, "meta", "token"), await need(secrets, "meta", "adaccount"), await need(secrets, "meta", "page"));
+        await pollExperiment(store, ad, f.experiment, clock);
+        const x = store.readExperiment(f.experiment);
+        console.log(`polled: ${x.counters.clicks ?? 0} clicks, $${x.counters.spendUsd ?? 0} spend.`);
+        return 0;
+      }
+      if (rest[0] !== "run") throw new Error("usage: pl experiment run|poll ...");
       const f = flags(rest.slice(1));
       const secrets = await resolveSecrets();
       const assumptionId = f.assumption ?? gatingAssumption(store.readHypothesis(store.readLedger().activeHypothesisId!))?.id;
@@ -148,12 +191,12 @@ async function main(argv: string[]): Promise<number> {
         },
         {
           assumptionId,
-          priceUsd: Number(f.price ?? 0),
+          priceUsd: num(f, "price", { min: 0 }),
           stripePublishableKey: await need(secrets, "stripe", "publishable"),
           headline: f.headline ?? "Coming soon",
           subhead: f.subhead ?? "",
           ctaLabel: f.cta ?? "Reserve your spot",
-          targeting: { keywords: (f.keywords ?? "").split(",").filter(Boolean), dailyBudgetUsd: Number(f.daily ?? 0), days: Number(f.days ?? 0), headline: f.headline ?? "Coming soon", body: f.subhead ?? "" },
+          targeting: { keywords: (f.keywords ?? "").split(",").filter(Boolean), dailyBudgetUsd: num(f, "daily", { min: 0 }), days: num(f, "days", { min: 0 }), headline: f.headline ?? "Coming soon", body: f.subhead ?? "" },
           confirmActivation: f.activate === "true",
         },
         clock,
@@ -189,6 +232,24 @@ async function main(argv: string[]): Promise<number> {
     case "status": {
       requireInit(store);
       console.log(renderLedgerMd(store.readLedger(), store.listHypotheses()));
+      return 0;
+    }
+
+    case "pivot": {
+      requireInit(store);
+      const claim = rest.filter((a) => !a.startsWith("--")).join(" ") || undefined;
+      const r = pivot(store, claim, clock);
+      console.log(`${r.archived ? `archived ${r.archived}; ` : ""}${r.created ? `new active ${r.created.id}` : "no active hypothesis"}.`);
+      return 0;
+    }
+
+    case "export": {
+      requireInit(store);
+      const hyps = store.listHypotheses();
+      const md = buildExport(store.readLedger(), hyps, verifiedCounts(store, hyps));
+      const out = "proofledger-export.md";
+      writeFileSync(out, md, "utf8");
+      console.log(`wrote ${out}`);
       return 0;
     }
 

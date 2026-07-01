@@ -31,9 +31,30 @@ Node 20+, TypeScript strict, Vitest, flat-JSON store, keytar for secrets. No DB,
 - `npm run pl -- <cmd>` — run the CLI locally
 
 ## Build progress
-_Milestone: **M1–M4 + launch scaffold + network adapters wired.** 53 tests passing, typecheck clean, 0 vulns._
+_Milestone: **npm-candidate.** 66 unit tests + 2 live, typecheck clean, 0 vulns, npm-pack verified clean._
 
-**Network wiring (this session):**
+**npm-hardening (latest):**
+- `src/hook/gate-hook.ts` + tests — PreToolUse gate mechanics proven offline (block locked, allow open, allow non-product, fail-open); `hooks/build-gate.mjs` now a thin wrapper.
+- `pl doctor [--ping]` (`src/commands/doctor.ts`) + `src/adapters/verify-credentials.ts` — provider connection status + cheap live ping (Stripe/CF/Meta), mock-fetch tested.
+- CLI hardening: `num()` validates numeric flags (reject NaN/negative), `pl --version`.
+- `CHANGELOG.md`; package `files` verified via `npm pack --dry-run` (no src/tests/secrets ship).
+
+**Blocking npm publish — needs USER's live env (not code):**
+1. One real `pl experiment run` end-to-end incl. Meta (even sandbox).
+2. Install plugin in a real Claude Code session; confirm the PreToolUse gate actually blocks a Write. Validate plugin.json against current Claude Code plugin schema.
+
+**_Uncommitted on `main`:_** pivot/export/poll + doctor/hook/version/validation/CHANGELOG + README fix (needs a branch to commit).
+
+**CLI completeness:**
+- `pl pivot ["<claim>"]` — archive active hypothesis (+ optional new), gate re-locks.
+- `pl export` — shareable read-only report; verified-evidence counts + **surfaces gate overrides**. Pure `buildExport`.
+- `pl experiment poll --experiment <id>` — real clicks/spend via Meta insights.
+- README status corrected. Command set matches functional-spec §5. Tests: `src/commands/pivot-export.test.ts`.
+- _Uncommitted:_ pivot/export/poll + README live in the working tree on `main` (needs a branch to commit).
+
+**Live smoke results:** Stripe test-mode PASS (dedupe 3→2 + voids), Cloudflare Worker PASS (deploy+serve). Meta unit-tested only.
+
+**Network wiring:**
 - `src/adapters/http.ts` — `httpJson` wrapper with **injectable `fetch`** (adapters unit-tested offline with mock fetch).
 - `src/adapters/host.ts` — `CloudflareWorkerAdapter` (real): deploys landing as a Worker (PUT script → enable subdomain → resolve workers.dev URL). Pure `buildWorkerScript` + `workerName`. Replaced the Pages skeleton (Worker path avoids Pages' hash-manifest/upload-token).
 - `src/adapters/ad.ts` — `MetaAdAdapter` (real): Graph v21 full flow campaign→adset→**adcreative→ad**, all PAUSED; activate/pause/insights. Needs a Facebook Page id (`meta.page` secret). Pure `campaignPayload`/`adSetPayload`/`adCreativePayload`/`adPayload`/`sumInsights`.
