@@ -87,9 +87,18 @@ npm run smoke:meta
 ```
 (All smoke scripts auto-load `.env.test`; the same file can hold `PL_LIVE_STRIPE`
 and `PL_LIVE_CF_*`. It is never committed.)
-Token needs `ads_management`; the ad account may need a payment method attached
-even for paused ads (it is never charged while paused). Pass = the whole ad
-sequence works against the real Graph API.
+Pass = the whole ad sequence works against the real Graph API.
+
+**Meta account prerequisites** (one-time; these gate the API, not our code):
+- Token has `ads_management` + `pages_show_list` + `pages_manage_ads`, and you are
+  an **admin** of the Page. Get the numeric Page id from
+  `GET /v21.0/me/accounts` (not your personal profile, not the URL slug).
+- The **Meta App must be in Live mode** (developers.facebook.com → App → toggle
+  Development→Live; needs a Privacy Policy URL + category, possibly Business
+  Verification). Dev-mode apps can create a campaign + ad set but **not an ad
+  creative** (subcode 1885183).
+- The ad account may need a payment method attached even for paused ads (never
+  charged while paused).
 
 ### Manual variant
 1. Get a **user access token** with `ads_management` (Graph API Explorer).
