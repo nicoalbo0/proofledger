@@ -31,7 +31,18 @@ Node 20+, TypeScript strict, Vitest, flat-JSON store, keytar for secrets. No DB,
 - `npm run cli -- <cmd>` — run the CLI locally (installed bins: `proofledger`, `plg`)
 
 ## Build progress
-_Milestone: **npm-candidate.** 66 unit tests + 2 live, typecheck clean, 0 vulns, npm-pack verified clean._
+_Milestone: **core promise LIVE-VALIDATED.** 67 unit tests + 2 live, typecheck clean, 0 vulns._
+
+**Live validation (real infra):**
+- ✅ **Build gate blocks Claude Code in a live session** — a Write to `src/app.ts` under a locked gate was DENIED with the ProofLedger reason. The headline feature works in-vivo.
+- ✅ Stripe test-mode (dedupe + void), ✅ Cloudflare Worker (deploy+serve).
+- ⚠ Found + fixed via live test: PreToolUse passes an **absolute** file_path; productGlobs are repo-relative → gate allowed everything. Fixed in `gate-hook.ts` (relativize vs payload cwd) + regression test. Would have broken the gate for every user.
+- Bin renamed `pl`→`proofledger` (+`plg`) — `pl` collided with `/usr/bin/pl`.
+- Remaining live gap: Meta ads (unit-tested; user has no FB app) + the combined `experiment run` seam. Non-critical (traffic source).
+
+**npm verdict:** core is proven; publishing 0.1.0 is defensible (label Meta "unit-tested, live run pending").
+
+**npm-hardening:**
 
 **npm-hardening (latest):**
 - `src/hook/gate-hook.ts` + tests — PreToolUse gate mechanics proven offline (block locked, allow open, allow non-product, fail-open); `hooks/build-gate.mjs` now a thin wrapper.
