@@ -26,7 +26,7 @@ export function gateCheck(store: Store, path: string): GateDecision {
   }
   return {
     decision: "block",
-    reason: `build gate locked: ${ledger.gate.reason}. Run \`pl status\` — gather verified evidence to unlock.`,
+    reason: `build gate locked: ${ledger.gate.reason}. Run \`proofledger status\` — gather verified evidence to unlock.`,
   };
 }
 

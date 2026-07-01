@@ -39,13 +39,13 @@ function flags(argv: string[]): Record<string, string> {
 }
 
 function requireInit(store: Store): void {
-  if (!store.isInitialized()) throw new Error("not initialized — run `pl init` first");
+  if (!store.isInitialized()) throw new Error("not initialized — run `proofledger init` first");
 }
 
 /** Fetch a required secret or fail with a clear "connect this provider" message. */
 async function need(secrets: SecretsProvider, provider: string, name: string): Promise<string> {
   const v = await secrets.get(secretKey(provider, name));
-  if (!v) throw new Error(`missing ${provider}.${name} — run \`pl connect ${provider} --${name} <value>\``);
+  if (!v) throw new Error(`missing ${provider}.${name} — run \`proofledger connect ${provider} --${name} <value>\``);
   return v;
 }
 
@@ -77,7 +77,7 @@ async function main(argv: string[]): Promise<number> {
     case "help":
     case "--help":
       console.log(
-        "pl <command>\n\n" +
+        "proofledger <command>\n\n" +
           "  init [motivation]\n" +
           "  connect <provider> --<key> <value> ...\n" +
           "  doctor [--ping true]\n" +
@@ -97,7 +97,7 @@ async function main(argv: string[]): Promise<number> {
 
     case "connect": {
       const provider = rest[0];
-      if (!provider) throw new Error("usage: pl connect <provider> --<key> <value>");
+      if (!provider) throw new Error("usage: proofledger connect <provider> --<key> <value>");
       const f = flags(rest.slice(1));
       const secrets = await resolveSecrets();
       for (const [k, v] of Object.entries(f)) await secrets.set(secretKey(provider, k), v);
@@ -115,7 +115,7 @@ async function main(argv: string[]): Promise<number> {
     case "signal": {
       requireInit(store);
       const f = flags(rest);
-      if (!f.assumption) throw new Error("usage: pl signal --assumption <id> --keywords a,b --competitors c,d");
+      if (!f.assumption) throw new Error("usage: proofledger signal --assumption <id> --keywords a,b --competitors c,d");
       const score = await runSignalScreen(
         store,
         new PublicSignalAdapter(),
@@ -128,7 +128,7 @@ async function main(argv: string[]): Promise<number> {
         },
         clock,
       );
-      console.log(`signal score ${score.final}/100${score.redOcean ? " (RED OCEAN)" : ""}. Run \`pl status\`.`);
+      console.log(`signal score ${score.final}/100${score.redOcean ? " (RED OCEAN)" : ""}. Run \`proofledger status\`.`);
       return 0;
     }
 
@@ -141,7 +141,7 @@ async function main(argv: string[]): Promise<number> {
     case "hypothesis": {
       requireInit(store);
       const claim = rest.filter((a) => !a.startsWith("--")).join(" ");
-      if (!claim) throw new Error('usage: pl hypothesis "<claim>"');
+      if (!claim) throw new Error('usage: proofledger hypothesis "<claim>"');
       const h = addHypothesis(store, claim, clock);
       console.log(`created ${h.id} with ${h.assumptions.length} assumptions; gate locked.`);
       return 0;
@@ -169,7 +169,7 @@ async function main(argv: string[]): Promise<number> {
       requireInit(store);
       if (rest[0] === "poll") {
         const f = flags(rest.slice(1));
-        if (!f.experiment) throw new Error("usage: pl experiment poll --experiment <id>");
+        if (!f.experiment) throw new Error("usage: proofledger experiment poll --experiment <id>");
         const secrets = await resolveSecrets();
         const ad = new MetaAdAdapter(await need(secrets, "meta", "token"), await need(secrets, "meta", "adaccount"), await need(secrets, "meta", "page"));
         await pollExperiment(store, ad, f.experiment, clock);
@@ -177,7 +177,7 @@ async function main(argv: string[]): Promise<number> {
         console.log(`polled: ${x.counters.clicks ?? 0} clicks, $${x.counters.spendUsd ?? 0} spend.`);
         return 0;
       }
-      if (rest[0] !== "run") throw new Error("usage: pl experiment run|poll ...");
+      if (rest[0] !== "run") throw new Error("usage: proofledger experiment run|poll ...");
       const f = flags(rest.slice(1));
       const secrets = await resolveSecrets();
       const assumptionId = f.assumption ?? gatingAssumption(store.readHypothesis(store.readLedger().activeHypothesisId!))?.id;
@@ -215,10 +215,10 @@ async function main(argv: string[]): Promise<number> {
         console.log(`counted ${r.counted} verified pre-auths, rejected ${r.rejected.length}, voided ${r.voided.length}.`);
         return 0;
       }
-      if (!f.file) throw new Error("usage: pl verify --experiment <id> | --file <batches.json>");
+      if (!f.file) throw new Error("usage: proofledger verify --experiment <id> | --file <batches.json>");
       const batches = JSON.parse(readFileSync(f.file, "utf8")) as StubBatch[];
       verifyStub(store, batches, clock);
-      console.log("verified; ledger recomputed. Run `pl status`.");
+      console.log("verified; ledger recomputed. Run `proofledger status`.");
       return 0;
     }
 

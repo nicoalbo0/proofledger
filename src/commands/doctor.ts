@@ -18,7 +18,7 @@ export interface ProviderReport {
 }
 
 /**
- * `pl doctor` — report which providers are connected. With `--ping`, hits a cheap
+ * `proofledger doctor` — report which providers are connected. With `--ping`, hits a cheap
  * authenticated endpoint per provider so a founder knows keys actually work
  * before running an experiment that spends money.
  */

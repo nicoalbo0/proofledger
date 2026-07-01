@@ -28,7 +28,7 @@ Node 20+, TypeScript strict, Vitest, flat-JSON store, keytar for secrets. No DB,
 ## Commands (dev)
 - `npm run build` — tsc
 - `npm test` — vitest
-- `npm run pl -- <cmd>` — run the CLI locally
+- `npm run cli -- <cmd>` — run the CLI locally (installed bins: `proofledger`, `plg`)
 
 ## Build progress
 _Milestone: **npm-candidate.** 66 unit tests + 2 live, typecheck clean, 0 vulns, npm-pack verified clean._

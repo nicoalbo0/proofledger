@@ -41,31 +41,31 @@ until then.
 ## Install
 
 ```bash
-npm install -g proofledger        # CLI `pl`
+npm install -g proofledger        # CLI `proofledger`
 # or install as a Claude Code plugin (build gate auto-registers)
 ```
 
 ## Quickstart
 
 ```bash
-pl init "why I'm building this"
-pl hypothesis "diabetics will pre-pay \$15/mo for AI meal planning"
+proofledger init "why I'm building this"
+proofledger hypothesis "diabetics will pre-pay \$15/mo for AI meal planning"
 
 # Freeze a falsifiable bet — thresholds are hash-locked, no goalpost-moving.
-pl register --metric preauth_conversion --sample 300 --pass 0.05 --kill 0.02
+proofledger register --metric preauth_conversion --sample 300 --pass 0.05 --kill 0.02
 
 # Optional free Tier-0 screen first (kills obviously-dead ideas for $0):
-pl connect stripe --secret sk_... --publishable pk_...
-pl signal --assumption <demand-id> --keywords "diabetes,meal planning" --competitors "mynetdiary"
+proofledger connect stripe --secret sk_... --publishable pk_...
+proofledger signal --assumption <demand-id> --keywords "diabetes,meal planning" --competitors "mynetdiary"
 
 # Run the real experiment: landing page on YOUR host, ads on YOUR account,
 # pre-auth on YOUR Stripe. Ads start PAUSED; nothing spends until you confirm.
-pl experiment run --assumption <pay-id> --price 15 \
+proofledger experiment run --assumption <pay-id> --price 15 \
   --headline "Meal plans that count carbs for you" \
   --keywords "diabetes,meal planning" --daily 20 --days 5 --activate true
 
-pl verify --experiment <id>   # re-fetch pre-auths, dedupe, void the holds
-pl status                      # scoreboard + verdict; gate opens iff money verified
+proofledger verify --experiment <id>   # re-fetch pre-auths, dedupe, void the holds
+proofledger status                      # scoreboard + verdict; gate opens iff money verified
 ```
 
 ## What you get

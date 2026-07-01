@@ -10,7 +10,7 @@ export interface PivotResult {
 }
 
 /**
- * `pl pivot` — archive the active hypothesis (a dead bet is history, not deleted)
+ * `proofledger pivot` — archive the active hypothesis (a dead bet is history, not deleted)
  * and optionally seed a new one. The build gate re-locks: a fresh hypothesis is
  * untested, and no active hypothesis means nothing to gate on.
  */

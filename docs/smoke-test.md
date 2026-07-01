@@ -49,20 +49,20 @@ for propagation.)
 ### Manual variant (recommended once)
 Do a real end-to-end page check by hand:
 ```bash
-pl init "smoke"
-pl connect stripe --secret sk_test_xxx --publishable pk_test_xxx
-pl connect cloudflare --account <id> --token <token>
-pl connect meta --token t --adaccount a --page p     # placeholders ok for now
-pl hypothesis "people will pre-pay \$9/mo for X"
-pl register --metric preauth_conversion --sample 100 --pass 0.05 --kill 0.02
+proofledger init "smoke"
+proofledger connect stripe --secret sk_test_xxx --publishable pk_test_xxx
+proofledger connect cloudflare --account <id> --token <token>
+proofledger connect meta --token t --adaccount a --page p     # placeholders ok for now
+proofledger hypothesis "people will pre-pay \$9/mo for X"
+proofledger register --metric preauth_conversion --sample 100 --pass 0.05 --kill 0.02
 # run WITHOUT --activate so no ad spends; deploys the page + wires Stripe:
-pl experiment run --assumption <pay-id> --price 9 --headline "X" --keywords a,b --daily 5 --days 3
+proofledger experiment run --assumption <pay-id> --price 9 --headline "X" --keywords a,b --daily 5 --days 3
 ```
 Open the printed URL, pay with test card `4242 4242 4242 4242` (any future
 expiry/CVC), then:
 ```bash
-pl verify --experiment <id>   # should count your test pre-auth and void it
-pl status                     # gate opens if the bet clears
+proofledger verify --experiment <id>   # should count your test pre-auth and void it
+proofledger status                     # gate opens if the bet clears
 ```
 
 ---
@@ -79,8 +79,8 @@ API sequence; only go live if you want real clicks.
 3. Get a **Facebook Page id** (a test Page is fine).
 4. Connect + run paused (nothing delivers):
    ```bash
-   pl connect meta --token <token> --adaccount <act-id-digits> --page <page-id>
-   pl experiment run --assumption <pay-id> --price 9 --headline "X" \
+   proofledger connect meta --token <token> --adaccount <act-id-digits> --page <page-id>
+   proofledger experiment run --assumption <pay-id> --price 9 --headline "X" \
      --keywords a,b --daily 5 --days 3        # no --activate
    ```
    Success = campaign → ad set → creative → ad all created **PAUSED**, no errors.
@@ -89,7 +89,7 @@ API sequence; only go live if you want real clicks.
 Add `--activate true` with a tiny budget (`--daily 2 --days 1`), let it run ~1
 hour, then:
 ```bash
-pl verify --experiment <id>    # pull real clicks + verified pre-auths
+proofledger verify --experiment <id>    # pull real clicks + verified pre-auths
 ```
 Pause/delete the campaign in Ads Manager when done.
 
