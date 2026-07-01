@@ -38,8 +38,10 @@ describe("Cloudflare host adapter", () => {
 });
 
 describe("Meta ad payloads + adapter", () => {
-  it("campaign is PAUSED", () => {
-    expect(campaignPayload().status).toBe("PAUSED");
+  it("campaign is PAUSED and declares adset budget sharing (v21 requirement)", () => {
+    const p = campaignPayload();
+    expect(p.status).toBe("PAUSED");
+    expect(p.is_adset_budget_sharing_enabled).toBe("false");
   });
   it("ad set budget is minor units and PAUSED", () => {
     const p = adSetPayload("c1", { keywords: ["x"], dailyBudgetUsd: 20, days: 5 });
