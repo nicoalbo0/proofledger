@@ -1,0 +1,27 @@
+name: Feature request
+description: Suggest an improvement or new capability.
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What are you trying to do that ProofLedger makes hard today?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+    validations:
+      required: true
+  - type: textarea
+    id: integrity
+    attributes:
+      label: Integrity impact
+      description: >-
+        ProofLedger's core promise is that only machine-verified evidence changes
+        an assumption's status, and only real money (tier >= 2) opens the build
+        gate. Does this request affect that? How does it keep the gate un-gameable?
+    validations:
+      required: false

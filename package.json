@@ -1,0 +1,62 @@
+{
+  "name": "proofledger",
+  "version": "0.1.0",
+  "description": "Local-first startup-validation plugin: gate coding on machine-verified real-money evidence.",
+  "type": "module",
+  "bin": {
+    "pl": "./dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "hooks",
+    ".claude-plugin",
+    "SKILL.md",
+    "README.md",
+    "LICENSE",
+    "NOTICE"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "coverage": "vitest run --coverage",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "pl": "node --import tsx ./src/cli.ts",
+    "prepublishOnly": "npm run build && npm test"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "keywords": [
+    "startup-validation",
+    "claude-code",
+    "plugin",
+    "lean-startup",
+    "customer-development",
+    "cli"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nicola-albore/proofledger.git"
+  },
+  "homepage": "https://github.com/nicola-albore/proofledger#readme",
+  "bugs": {
+    "url": "https://github.com/nicola-albore/proofledger/issues"
+  },
+  "author": "Nicola Albore",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "nanoid": "^5.0.7"
+  },
+  "optionalDependencies": {
+    "stripe": "^17.0.0",
+    "keytar": "^7.9.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.17.6",
+    "@vitest/coverage-v8": "^4.1.9",
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3",
+    "vitest": "^4.1.9"
+  }
+}

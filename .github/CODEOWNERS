@@ -1,0 +1,7 @@
+# Default owner for everything.
+* @nicola-albore
+
+# The integrity core — changes here need extra scrutiny.
+/src/domain/apply.ts       @nicola-albore
+/src/domain/integrity.ts   @nicola-albore
+/src/domain/verify-core.ts @nicola-albore

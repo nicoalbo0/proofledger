@@ -1,0 +1,18 @@
+# deps + build
+node_modules/
+dist/
+*.tsbuildinfo
+coverage/
+
+# os / editor
+.DS_Store
+*.log
+
+# secrets — never commit. ProofLedger stores these in the OS keychain or a
+# 0600 file under ~/.proofledger; guard the repo anyway.
+.env
+.env.*
+**/secrets.json
+.proofledger/secrets*
+
+# NOTE: docs/ is intentionally TRACKED (specs are part of the product).

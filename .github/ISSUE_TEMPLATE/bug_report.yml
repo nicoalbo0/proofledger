@@ -1,0 +1,52 @@
+name: Bug report
+description: Something in ProofLedger behaves incorrectly.
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for reporting. Please do NOT paste secrets, API keys, or verified-evidence artifacts.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What did you expect, and what happened instead?
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. pl init
+        2. pl hypothesis "..."
+        3. ...
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: ProofLedger version
+      placeholder: "0.1.0"
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - ledger / gate
+        - registration / hash-lock
+        - verification (Stripe / payment)
+        - signal (Tier-0)
+        - experiment runner (landing / ads)
+        - CLI / plugin hook
+        - other
+    validations:
+      required: true
+  - type: input
+    id: env
+    attributes:
+      label: OS + Node version
+      placeholder: "macOS 15 / Node 20.17"
+    validations:
+      required: true
