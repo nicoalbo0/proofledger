@@ -58,7 +58,7 @@
     "nanoid": "^5.0.7"
   },
   "optionalDependencies": {
-    "stripe": "^17.0.0",
+    "stripe": "^22.3.0",
     "keytar": "^7.9.0"
   },
   "devDependencies": {
