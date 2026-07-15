@@ -55,10 +55,10 @@
     "access": "public"
   },
   "dependencies": {
-    "nanoid": "^5.0.7"
+    "nanoid": "^6.0.0"
   },
   "optionalDependencies": {
-    "stripe": "^17.0.0",
+    "stripe": "^22.3.1",
     "keytar": "^7.9.0"
   },
   "devDependencies": {
